@@ -1,0 +1,28 @@
+[Unit]
+Description=Shield Stream 3.1 private media workspace
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=streamforge
+DynamicUser=true
+StateDirectory=streamforge3
+StateDirectoryMode=0700
+WorkingDirectory=/opt/streamforge3
+EnvironmentFile=/etc/streamforge3.env
+ExecStart=/opt/streamforge3/venv/bin/python -m server.app
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/streamforge3
+MemoryMax=1G
+CPUQuota=100%
+TasksMax=128
+Nice=10
+[Install]
+WantedBy=multi-user.target

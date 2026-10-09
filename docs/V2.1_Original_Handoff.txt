@@ -1,0 +1,648 @@
+STREAMFORGE UNIVERSAL VIDEO DOWNLOADER V2.1
+FULL PROJECT SUMMARY / HANDOFF DOCUMENT
+============================================================
+
+Project Name:
+StreamForge Universal Video Downloader
+
+Latest Version:
+V2.1 – On-Video Quality Toggle
+
+Platform:
+Windows Desktop App + Chromium Browser Extension
+
+Main Purpose:
+A Windows desktop video downloader that can download media from normal URLs, YouTube/yt-dlp compatible websites, direct media links, HLS/DASH streams, and embedded webpage media detected through a Chromium browser extension.
+
+The tool is designed for standard non-DRM media that the browser or website legitimately exposes. It is not intended to bypass DRM, paywalls, encrypted access controls, Widevine, PlayReady, FairPlay, or similar protection systems.
+
+
+============================================================
+1. MAIN WORKFLOW
+============================================================
+
+Typical workflow:
+
+Play Video
+→ On-video Download button appears
+→ Choose quality
+→ Stream is sent to StreamForge desktop app
+→ Preview
+→ Download
+
+
+============================================================
+2. YOUTUBE + NORMAL URL DOWNLOADING
+============================================================
+
+The desktop app supports pasted URLs.
+
+Main backend technologies:
+- yt-dlp
+- FFmpeg
+- imageio-ffmpeg
+- PySide6
+
+Supported source types include:
+- YouTube / yt-dlp compatible websites
+- Normal webpages
+- Direct MP4 URLs
+- Direct WebM URLs
+- Direct audio URLs
+- HLS / .m3u8
+- DASH / .mpd
+- Standard embedded webpage media
+
+
+============================================================
+3. EMBEDDED WEB VIDEO DETECTION
+============================================================
+
+The Chrome extension is designed to detect media inside webpages.
+
+It is not limited to only <video> tags.
+
+Detection can include:
+- <video> elements
+- <source> elements
+- Nested iframes
+- Accessible embedded players
+- Open Shadow DOM
+- Common media-related data attributes
+- Dynamically loaded media
+- Network responses
+- Fetch/XHR traffic
+- HLS manifests
+- DASH manifests
+- Direct video/audio responses
+- Extensionless media responses
+- Small media/player/config responses
+- Standard media URLs found in WebSocket text messages
+
+
+============================================================
+4. IDM-STYLE ON-VIDEO DOWNLOAD BUTTON
+============================================================
+
+V2.1 introduced an IDM-style download button directly over a playing HTML5 video.
+
+Example:
+
+↓ Download
+
+When clicked, a quality menu can appear over the player.
+
+Possible options:
+
+Best Available
+2160p
+1440p
+1080p
+720p
+480p
+360p
+Audio
+
+The extension prefers qualities that were actually detected for the current player/media.
+
+The browser itself does not blindly download the media. The selected stream/quality is sent to the StreamForge desktop app.
+
+
+============================================================
+5. SMART STREAM GROUPING
+============================================================
+
+A single webpage/player can generate many media requests.
+
+Instead of showing dozens of duplicate items, StreamForge groups related variants under the same logical video.
+
+Example:
+
+Same Video
+├── 1080p
+├── 720p
+├── 480p
+└── Audio
+
+Fresh capture information can update the existing result instead of always creating a duplicate card.
+
+
+============================================================
+6. QUALITY / MANIFEST DISCOVERY
+============================================================
+
+The project can inspect HLS and DASH manifests.
+
+It can identify information such as:
+- Resolution
+- Bitrate
+- FPS
+- Language hints
+- Separate audio/video tracks
+
+For DASH or other split-stream formats:
+
+Video Track
++
+Audio Track
+→ FFmpeg Merge
+→ Final MP4
+
+
+============================================================
+7. PREVIEW BEFORE DOWNLOAD
+============================================================
+
+Each result can be previewed before downloading.
+
+Preview logic includes:
+- Built-in Qt preview for compatible/local media
+- ffplay for streams requiring headers or special handling
+- FFmpeg short compatibility preview fallback if needed
+
+V2.0.1 contained an important preview reliability fix which is preserved in V2.1.
+
+
+============================================================
+8. POWER SCAN 30s
+============================================================
+
+The Chrome extension includes scan modes such as:
+
+Quick Scan
+Power Scan 30s
+
+Recommended use for difficult embedded players:
+
+1. Open the webpage.
+2. Start video playback.
+3. Run Quick Scan.
+4. If needed, run Power Scan 30s.
+5. Keep playback active during the scan.
+6. Let the extension observe network activity.
+7. Select the strongest detected candidate.
+
+
+============================================================
+9. VERIFIED STREAMS
+============================================================
+
+The extension evaluates detected media candidates.
+
+Stronger and more reliable network/media candidates can be marked or prioritized as VERIFIED.
+
+The on-video quality menu should prefer verified streams when possible.
+
+
+============================================================
+10. EXPIRING / SIGNED URL HANDLING
+============================================================
+
+Some websites use temporary CDN links such as URLs containing:
+
+?token=...
+?expires=...
+
+If a stream becomes stale or expired:
+
+403 / 404 / expired token
+→ Refresh from Chrome
+→ Extension scans the source tab again
+→ Fresh stream candidate is returned
+→ Desktop result is updated
+
+The app should not keep retrying a clearly expired URL forever.
+
+
+============================================================
+11. REFRESH FROM CHROME
+============================================================
+
+The desktop app can keep a relationship with the originating browser tab.
+
+If a captured URL expires, a "Refresh from Chrome" action can request a fresh capture from the original browser page.
+
+
+============================================================
+12. RELIABLE / RESUMABLE DOWNLOADS
+============================================================
+
+The download system is designed to support:
+- .part files
+- Resume
+- yt-dlp continuation
+- HLS/DASH fragment downloading
+- Retry / fallback behavior
+
+Speed modes can include:
+
+Normal
+Fast
+Maximum
+
+Maximum mode can optionally use aria2c when suitable.
+
+
+============================================================
+13. ARIA2 ACCELERATION
+============================================================
+
+Optional Windows helper:
+
+install_aria2_windows.bat
+
+aria2 can improve some progressive HTTP downloads by using multiple connections.
+
+It is optional and not required for basic operation.
+
+
+============================================================
+14. FFMPEG
+============================================================
+
+FFmpeg is used for tasks such as:
+- Video + audio merging
+- Stream processing
+- Media conversion
+- Compatibility preview generation
+- MP3/audio extraction
+
+Windows helper:
+
+install_ffmpeg_windows.bat
+
+
+============================================================
+15. AUDIO / MP3 EXTRACTION
+============================================================
+
+The project includes an audio extraction workflow where supported.
+
+A compatible source can be downloaded/extracted as audio/MP3 through the normal desktop workflow.
+
+
+============================================================
+16. SUBTITLES
+============================================================
+
+Optional subtitle/caption support is included.
+
+Preferred language patterns may be configured, for example:
+
+en.*
+ur.*
+hi.*
+
+Where supported, subtitles can be downloaded and/or embedded into a compatible output.
+
+
+============================================================
+17. DOWNLOAD HISTORY
+============================================================
+
+The app includes local SQLite-based download history.
+
+Completed downloads can be restored after restarting the application.
+
+History can be made optional/disabled from Settings.
+
+
+============================================================
+18. DUPLICATE PROTECTION
+============================================================
+
+When the same media appears to have already been downloaded, the app can offer options such as:
+
+Open Existing
+Download Again
+Cancel
+
+This is intended to reduce accidental duplicate downloads.
+
+
+============================================================
+19. FILENAME HANDLING
+============================================================
+
+Human-readable video titles are used when available.
+
+Windows-invalid filename characters are sanitized.
+
+For direct-file downloads, a safe Content-Disposition filename can be used when available.
+
+
+============================================================
+20. DIRECT FILE DOWNLOAD FOUNDATION
+============================================================
+
+The downloader architecture is not strictly limited to video.
+
+Direct URLs may also support common files such as:
+- PDF
+- ZIP
+- Images
+- Direct media files
+
+The main UI remains video-focused.
+
+
+============================================================
+21. CHROME EXTENSION ARCHITECTURE
+============================================================
+
+The browser companion uses Manifest V3.
+
+Known extension identity:
+
+StreamForge Companion
+Version 2.1.0
+Minimum Chrome: 111
+
+Designed for Chromium-family browsers such as:
+- Google Chrome
+- Microsoft Edge
+- Brave
+- Opera
+- Vivaldi
+
+
+============================================================
+22. EXTENSION PERMISSIONS
+============================================================
+
+The extension may use permissions such as:
+
+activeTab
+debugger
+storage
+tabs
+webNavigation
+webRequest
+
+Host access:
+<all_urls>
+
+These permissions are used for embedded/network media discovery.
+
+
+============================================================
+23. LOCAL DESKTOP BRIDGE
+============================================================
+
+The browser extension communicates with the desktop app through a local bridge.
+
+Known local endpoint:
+
+127.0.0.1:8765
+
+The bridge is intended to bind only to localhost and not expose a public internet-facing server.
+
+
+============================================================
+24. SECURITY / PRIVACY DESIGN
+============================================================
+
+Important protections include:
+- Localhost-only bridge
+- Random per-process pairing token
+- Reject normal webpage origins from talking directly to the bridge
+- URL scheme validation
+- Payload-size limits
+- Avoid storing browser cookies in desktop history
+- Avoid storing Authorization headers in history
+- Remove/clear temporary tab media candidate state
+- Allow history to be disabled
+
+
+============================================================
+25. FALSE-POSITIVE FILTERING
+============================================================
+
+Deep capture should not treat every network request as valid video.
+
+Filtering is intended to reject or deprioritize:
+- Tiny media fragments when not useful
+- HTML pages
+- Error pages
+- 403/404 responses
+- DRM/license endpoints
+- Obviously invalid media responses
+
+This reduces cases where an HTML/error response is mistakenly saved as a video file.
+
+
+============================================================
+26. DRM / ACCESS-CONTROL BOUNDARY
+============================================================
+
+The project deliberately does NOT attempt to bypass:
+
+- Widevine
+- PlayReady
+- FairPlay
+- DRM license systems
+- Paywalls
+- Encrypted access-control systems
+
+The intended scope is standard non-DRM media that the browser legitimately exposes and that the user is authorized to download.
+
+
+============================================================
+27. IMPORTANT PROJECT FILES
+============================================================
+
+Main project structure includes files similar to:
+
+app.py
+
+downloader_app/
+    models.py
+    browser_bridge.py
+    media_probe.py
+    workers.py
+    ui.py
+    preview.py
+    history.py
+    runtime.py
+
+chrome_extension/
+    manifest.json
+    content.js
+    page_hook.js
+    background.js
+    popup.js
+    popup.html
+    popup.css
+    README.txt
+
+
+============================================================
+28. WINDOWS HELPER FILES
+============================================================
+
+The project includes Windows helper scripts such as:
+
+run_windows.bat
+build_exe.bat
+diagnose_windows.bat
+install_python_windows.bat
+install_ffmpeg_windows.bat
+install_aria2_windows.bat
+install_deno_windows.bat
+open_chrome_extension_setup.bat
+
+
+============================================================
+29. PYTHON REQUIREMENTS
+============================================================
+
+Known project requirements:
+
+PySide6>=6.8,<7
+yt-dlp[default,curl-cffi]>=2025.11.12
+imageio-ffmpeg>=0.6.0
+pyinstaller>=6.0
+
+
+============================================================
+30. BASIC WINDOWS INSTALLATION
+============================================================
+
+Fresh setup:
+
+1. Extract the project ZIP.
+2. Run:
+
+run_windows.bat
+
+Chrome extension installation:
+
+1. Open:
+   chrome://extensions
+2. Enable Developer mode.
+3. Click "Load unpacked".
+4. Select the project's chrome_extension folder.
+5. Refresh already-open webpages after extension installation/update.
+
+
+============================================================
+31. RECOMMENDED EMBEDDED VIDEO WORKFLOW
+============================================================
+
+1. Open the target webpage.
+2. Start playing the video.
+3. Check for the on-video Download button.
+4. If no stream appears, run Quick Scan.
+5. If still missing, run Power Scan 30s.
+6. Keep the video playing.
+7. Prefer VERIFIED media candidates.
+8. Select the required quality.
+9. Send it to StreamForge.
+10. Preview.
+11. Download.
+
+
+============================================================
+32. PROJECT VERSION HISTORY
+============================================================
+
+Known major versions:
+
+V1.7
+- Chrome Companion
+
+V1.8
+- Stream Capture improvements
+
+V1.9
+- Deep Capture
+
+V2.0
+- Power Scan / stronger capture architecture
+
+V2.0.1
+- Preview reliability fix
+
+V2.1
+- IDM-style On-Video Quality Toggle
+
+V2.1 is the latest known project base and should be used for future development.
+
+
+============================================================
+33. IMPORTANT DEVELOPMENT RULES FOR FUTURE UPGRADES
+============================================================
+
+When upgrading this project:
+
+1. Always start from V2.1.
+2. Inspect the complete ZIP before changing code.
+3. Do not remove existing working features.
+4. Keep desktop app and browser extension backward-compatible.
+5. Preserve yt-dlp/FFmpeg integration.
+6. Preserve preview-before-download.
+7. Preserve Power Scan and embedded media discovery.
+8. Preserve Refresh from Chrome.
+9. Preserve resumable downloads and history.
+10. Preserve on-video Download / quality selection.
+11. Preserve localhost-only bridge security.
+12. Preserve non-DRM/access-control boundary.
+13. Test both normal URL and browser-extension workflows.
+14. Package every upgrade as a new versioned ZIP.
+
+
+============================================================
+34. RECOMMENDED FUTURE IMPROVEMENTS
+============================================================
+
+Useful next upgrades may include:
+
+- Stronger per-player stream association
+- Better detection on modern SPA sites
+- Improved iframe/player mapping
+- Better HLS/DASH quality labeling
+- Better expiring-token refresh logic
+- Download queue manager
+- Per-download bandwidth limits
+- More robust pause/resume
+- Better failed-download recovery
+- Improved browser-extension status display
+- Better duplicate detection
+- Download scheduling
+- Cleaner settings UI
+- Better diagnostic/export logs
+- Auto-update checks for yt-dlp
+- Better FFmpeg dependency health checks
+- Improved portable Windows packaging
+- Better multi-tab media capture management
+
+
+============================================================
+35. COPY-PASTE HANDOFF TEXT FOR ANOTHER CHATGPT ACCOUNT
+============================================================
+
+I am giving you my latest working project, StreamForge Universal Video Downloader V2.1 – On-Video Quality Toggle.
+
+Continue development from this exact version.
+
+First inspect the entire ZIP and understand the desktop PySide6 app, yt-dlp/FFmpeg workers, browser bridge, preview system, history system, and Manifest V3 Chrome companion before changing anything.
+
+Preserve all existing features and backward compatibility.
+
+The project supports normal URLs, YouTube/yt-dlp sources, direct MP4/WebM/audio, HLS, DASH, embedded webpage media, nested iframes, network capture, Fetch/XHR detection, Power Scan 30s, extensionless media detection, VERIFIED stream prioritization, expiring-stream refresh, resume, quality selection, preview-before-download, history, duplicate protection, subtitles, optional aria2 acceleration, and the V2.1 IDM-style Download button/quality menu shown directly over playing HTML5 videos.
+
+Do not remove the existing non-DRM/access-control safety boundary. The tool should only process standard media the browser legitimately exposes and must not attempt to bypass DRM.
+
+For every future upgrade:
+- preserve existing working functionality
+- inspect the current architecture before modifying
+- test desktop and Chrome extension flows
+- keep browser bridge security
+- keep download history/resume compatibility
+- keep Power Scan and on-video quality controls
+- package the complete upgraded Windows project as a new versioned ZIP
+
+
+============================================================
+END OF PROJECT SUMMARY
+============================================================

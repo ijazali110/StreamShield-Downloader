@@ -1,0 +1,9 @@
+Shield Stream Desktop V2.2 - Studio Preview
+
+1. Double-click INSTALL_AND_RUN.bat.
+2. The launcher installs/updates the local downloader engine and opens Shield Stream.
+3. For browser deep scan, install chrome_extension as an unpacked extension in Chrome/Edge/Brave.
+4. Play a standard non-DRM video, click Shield Stream Companion, then Power scan 30s.
+5. You can also paste YouTube links directly into the desktop app. Downloads run from this PC/network rather than the VPS.
+
+The desktop build has no Shield Stream free-plan duration/resolution/file-size caps. Source availability, site terms, access controls and local disk/network limits still apply. DRM/license endpoints are intentionally ignored.

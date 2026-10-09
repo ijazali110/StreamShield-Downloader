@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shield Stream</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand-mark">SF</div>
+      <div class="brand-copy">
+        <strong>Shield Stream</strong>
+        <span>Browser Companion</span>
+      </div>
+      <span id="connection" class="status">Checking...</span>
+    </header>
+
+    <section class="page-card">
+      <div class="eyebrow">CURRENT PAGE</div>
+      <div id="pageTitle" class="page-title">Scanning page...</div>
+      <div id="pageUrl" class="page-url"></div>
+      <div class="page-actions">
+        <button id="scanBtn" class="secondary">Quick scan</button>
+        <button id="deepScanBtn" class="deep">Power scan 30s</button>
+        <button id="sendPageBtn" class="secondary compact">Try page URL</button>
+      </div>
+      <div id="deepState" class="deep-state"></div>
+      <label class="auto-row"><input id="autoSend" type="checkbox" /> <span>Auto-send verified streams to Shield Stream</span></label>
+      <label class="auto-row"><input id="floatingButton" type="checkbox" /> <span>Show IDM-style Download menu on playing videos</span></label>
+    </section>
+
+    <section class="results-head">
+      <div>
+        <div class="eyebrow">DETECTED MEDIA</div>
+        <strong id="countText">0 streams</strong>
+      </div>
+      <button id="clearBtn" class="text-btn">Clear</button>
+    </section>
+
+    <section id="empty" class="empty">
+      <div class="empty-icon">▶</div>
+      <strong>No stream detected yet</strong>
+      <p>Start playback, then use <b>Power scan 30s</b>. Keep the video playing while the scan runs.</p>
+    </section>
+
+    <section id="list" class="media-list"></section>
+
+    <footer>
+      <button id="sendAllBtn" class="primary" disabled>Send all streams to Shield Stream</button>
+      <div id="message" class="message"></div>
+    </footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
